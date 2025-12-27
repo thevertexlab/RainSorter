@@ -1,7 +1,7 @@
 import { useMemo, useCallback } from 'react';
 import { useAtom } from 'jotai';
-import { currentPageAtom, totalPagesAtom, totalCountAtom } from '../store/raindropsAtoms';
-import { itemsPerPageAtom, selectedSuggestionFolderAtom, hideSortedAtom } from '../store/uiAtoms';
+import { totalCountAtom } from '../store/raindropsAtoms';
+import { selectedSuggestionFolderAtom, hideSortedAtom } from '../store/uiAtoms';
 import { suggestionsLoadingAtom } from '../store/suggestionsAtoms';
 import { Loader } from './Loader';
 import { ErrorMessage } from './ErrorMessage';
@@ -18,10 +18,7 @@ export const RaindropsTable = ({
   onFetchSuggestions,
   suggestionsLoading
 }) => {
-  const [currentPage, setCurrentPage] = useAtom(currentPageAtom);
-  const [totalPages] = useAtom(totalPagesAtom);
   const [totalCount] = useAtom(totalCountAtom);
-  const [itemsPerPage, setItemsPerPage] = useAtom(itemsPerPageAtom);
   const [selectedFolder] = useAtom(selectedSuggestionFolderAtom);
   const [hideSorted, setHideSorted] = useAtom(hideSortedAtom);
   const [isFetchingSuggestions] = useAtom(suggestionsLoadingAtom);
@@ -111,18 +108,6 @@ export const RaindropsTable = ({
     );
   }
 
-  const handlePreviousPage = () => {
-    if (currentPage > 0) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages - 1) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
   return (
     <div className="raindrops-table-container">
       {selectedFolder && selectedFolder !== 'no-suggestion' && selectedFolderName && (
@@ -197,48 +182,6 @@ export const RaindropsTable = ({
             ))}
           </tbody>
         </table>
-      </div>
-
-      <div className="pagination">
-        <div className="pagination-controls">
-          <button
-            className="pagination-btn"
-            onClick={handlePreviousPage}
-            disabled={currentPage === 0 || loading || totalPages <= 1}
-          >
-            Previous
-          </button>
-          <span className="pagination-info">
-            Page {currentPage + 1} of {totalPages}
-          </span>
-          <button
-            className="pagination-btn"
-            onClick={handleNextPage}
-            disabled={currentPage >= totalPages - 1 || loading || totalPages <= 1}
-          >
-            Next
-          </button>
-        </div>
-        <div className="per-page-selector">
-          <label htmlFor="perPage" className="per-page-label">
-            Items per page:
-          </label>
-          <select
-            id="perPage"
-            className="per-page-select"
-            value={itemsPerPage}
-            onChange={(e) => {
-              setItemsPerPage(Number(e.target.value));
-              setCurrentPage(0);
-            }}
-          >
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-            <option value={200}>200</option>
-            <option value={500}>500</option>
-            <option value={1000}>1000</option>
-          </select>
-        </div>
       </div>
 
       {loading && (

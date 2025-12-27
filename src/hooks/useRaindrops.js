@@ -4,10 +4,9 @@ import {
   raindropsAtom,
   raindropsLoadingAtom,
   raindropsErrorAtom,
-  currentPageAtom,
   totalCountAtom
 } from '../store/raindropsAtoms';
-import { itemsPerPageAtom, includeSorterTagAtom } from '../store/uiAtoms';
+import { includeSorterTagAtom } from '../store/uiAtoms';
 import { useAuth } from './useAuth';
 import { fetchRaindrops, fetchRaindropsByTag } from '../services/raindropApi';
 import { refreshAccessToken } from '../services/authService';
@@ -19,23 +18,18 @@ export const useRaindrops = () => {
   const [raindrops, setRaindrops] = useAtom(raindropsAtom);
   const [loading, setLoading] = useAtom(raindropsLoadingAtom);
   const [error, setError] = useAtom(raindropsErrorAtom);
-  const [currentPage] = useAtom(currentPageAtom);
   const [, setTotalCount] = useAtom(totalCountAtom);
-  const [perPage] = useAtom(itemsPerPageAtom);
   const [includeSorterTag] = useAtom(includeSorterTagAtom);
 
   const { accessToken, refreshToken, saveTokens } = useAuth();
   const isFetchingRef = useRef(false);
-  const lastFetchKeyRef = useRef(null);
+  const hasFetchedRef = useRef(false);
 
   const loadRaindrops = useCallback(async (force = false) => {
     if (!accessToken || isFetchingRef.current) return;
 
-    // Create a key from current pagination state
-    const fetchKey = `${currentPage}-${perPage}`;
-
-    // Skip if already fetched this exact page/perPage combo (unless forcing refresh)
-    if (!force && lastFetchKeyRef.current === fetchKey && raindrops.length > 0) return;
+    // Skip if already fetched (unless forcing refresh)
+    if (!force && hasFetchedRef.current && raindrops.length > 0) return;
 
     isFetchingRef.current = true;
     setLoading(true);
@@ -55,41 +49,46 @@ export const useRaindrops = () => {
         }
       }
 
-      // Calculate how many pages we need to fetch
-      const pagesNeeded = Math.ceil(perPage / API_MAX_PER_PAGE);
       const allItems = [];
 
-      // Fetch unsorted items
-      for (let i = 0; i < pagesNeeded; i++) {
-        const data = await fetchRaindrops(tokenToUse, currentPage * pagesNeeded + i, API_MAX_PER_PAGE);
+      // Fetch ALL unsorted items (loop until no more items)
+      let page = 0;
+      let hasMore = true;
+      while (hasMore) {
+        const data = await fetchRaindrops(tokenToUse, page, API_MAX_PER_PAGE);
         allItems.push(...data.items);
 
         // Set total count from first response
-        if (i === 0) {
+        if (page === 0) {
           setTotalCount(data.count);
         }
 
         // Stop if we got fewer items than requested (end of data)
         if (data.items.length < API_MAX_PER_PAGE) {
-          break;
+          hasMore = false;
+        } else {
+          page++;
         }
       }
 
-      // Fetch _rainsorter tagged items if enabled
+      // Fetch ALL _rainsorter tagged items if enabled
       if (includeSorterTag) {
-        const sorterPagesNeeded = Math.ceil(perPage / API_MAX_PER_PAGE);
-        for (let i = 0; i < sorterPagesNeeded; i++) {
-          const data = await fetchRaindropsByTag(tokenToUse, '_rainsorter', currentPage * sorterPagesNeeded + i, API_MAX_PER_PAGE);
+        page = 0;
+        hasMore = true;
+        while (hasMore) {
+          const data = await fetchRaindropsByTag(tokenToUse, '_rainsorter', page, API_MAX_PER_PAGE);
           allItems.push(...data.items);
 
           if (data.items.length < API_MAX_PER_PAGE) {
-            break;
+            hasMore = false;
+          } else {
+            page++;
           }
         }
       }
 
-      setRaindrops(allItems.slice(0, perPage));
-      lastFetchKeyRef.current = fetchKey;
+      setRaindrops(allItems);
+      hasFetchedRef.current = true;
     } catch (err) {
       console.error('Load raindrops error:', err);
       setError(err.message || 'Failed to load raindrops');
@@ -97,14 +96,14 @@ export const useRaindrops = () => {
       setLoading(false);
       isFetchingRef.current = false;
     }
-  }, [accessToken, refreshToken, currentPage, perPage, includeSorterTag, raindrops.length]);
+  }, [accessToken, refreshToken, includeSorterTag, raindrops.length]);
 
   useEffect(() => {
     loadRaindrops(false);
-  }, [accessToken, currentPage, perPage, includeSorterTag]);
+  }, [accessToken, includeSorterTag]);
 
   const refetch = useCallback(() => {
-    lastFetchKeyRef.current = null;
+    hasFetchedRef.current = false;
     loadRaindrops(true);
   }, [loadRaindrops]);
 
