@@ -88,7 +88,7 @@ export const SuggestionsSidebar = ({ raindrops, suggestions }) => {
           className={`folder-item ${selectedFolder === null ? 'active' : ''}`}
           onClick={() => setSelectedFolder(null)}
         >
-          <span className="folder-name">🌐 All Items</span>
+          <span className="folder-name">🌐 All Unsorted Items</span>
           <span className="folder-count">{raindrops.length}</span>
         </button>
 

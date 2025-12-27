@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { fetchRaindropsByCollection } from '../services/raindropApi';
 
+const API_MAX_PER_PAGE = 50;
+
 export const FolderItemsPanel = ({ collectionId, collectionName }) => {
   const { accessToken } = useAuth();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true); // Start expanded
 
   useEffect(() => {
     if (!collectionId || !accessToken || collectionId === 'no-suggestion') return;
@@ -14,9 +16,23 @@ export const FolderItemsPanel = ({ collectionId, collectionName }) => {
     const loadItems = async () => {
       setLoading(true);
       try {
-        // Fetch first 100 items
-        const data = await fetchRaindropsByCollection(accessToken, collectionId, 0, 100);
-        setItems(data.items);
+        // Fetch ALL items from this collection
+        const allItems = [];
+        let page = 0;
+        let hasMore = true;
+
+        while (hasMore) {
+          const data = await fetchRaindropsByCollection(accessToken, collectionId, page, API_MAX_PER_PAGE);
+          allItems.push(...data.items);
+
+          if (data.items.length < API_MAX_PER_PAGE) {
+            hasMore = false;
+          } else {
+            page++;
+          }
+        }
+
+        setItems(allItems);
       } catch (error) {
         console.error('Failed to load folder items:', error);
       } finally {
