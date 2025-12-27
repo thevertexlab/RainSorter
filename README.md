@@ -1,284 +1,262 @@
-# RainSorter
+# 🌧️ RainSorter
 
-A simple React app to view and organize your unsorted Raindrop.io bookmarks.
+> AI-powered tool to help you organize your Raindrop.io bookmarks efficiently
 
-## Features
+## What is RainSorter?
 
-- 🔐 **Secure OAuth Authentication** with Raindrop.io
-- 📋 **Table View** of all unsorted bookmarks
-- 🏷️ **Tag Display** with visual badges
-- 📄 **Pagination** for easy navigation
-- 📱 **Responsive Design** that works on mobile and desktop
-- ⚡ **Fast** and lightweight with Vite + React
+RainSorter is an open-source web app that helps you sort through your unsorted Raindrop.io bookmarks. It uses Raindrop's built-in AI to suggest which folder each bookmark belongs to, and lets you move them with a single click.
 
-## Tech Stack
+**Perfect for when you have hundreds of unsorted bookmarks and need help organizing them!**
 
-- **Frontend**: Vite + React
-- **State Management**: Jotai
-- **Styling**: Plain CSS (no UI framework)
-- **Backend**: Express.js (OAuth proxy)
-- **API**: Raindrop.io REST API
+## Why Use RainSorter?
 
-## Prerequisites
+- 📚 **Bulk Organization**: Sort through all your unsorted bookmarks in one place
+- 🤖 **AI-Powered**: Get smart folder suggestions based on bookmark content
+- 🔍 **Quick Review**: See all items in existing folders while sorting
+- ↩️ **Easy Revert**: Made a mistake? Easily undo all changes (see below)
+- 🏷️ **Tagged Sorting**: Special tags track what you've sorted, so you can always revert
 
-- Node.js (v16 or higher)
-- npm or yarn
-- A Raindrop.io account
-- Raindrop.io OAuth app credentials (see setup below)
+## Quick Start
 
-## Getting OAuth Credentials
+### Prerequisites
+- A [Raindrop.io](https://raindrop.io) account
+- Basic command line knowledge
+- Node.js installed on your computer
 
-1. Go to [Raindrop.io Integrations Settings](https://raindrop.io/settings/integrations)
-2. Click "Create new app" or "+ for developers"
-3. Fill in the app details:
-   - **App Name**: RainSorter (or your choice)
-   - **Description**: View unsorted bookmarks
-   - **Redirect URI**: `http://localhost:5173/callback`
-4. Save and copy your:
-   - **Client ID**
-   - **Client Secret**
+### Setup (5 minutes)
 
-## Installation
+1. **Get OAuth Credentials**
+   - Go to https://raindrop.io/settings/integrations
+   - Click "Create new app"
+   - Set redirect URI: `http://localhost:5173/callback`
+   - Copy your Client ID and Client Secret
 
-### 1. Clone and Install Dependencies
+2. **Configure Environment**
+   ```bash
+   # Frontend (.env)
+   VITE_RAINDROP_CLIENT_ID=your_client_id_here
+   VITE_REDIRECT_URI=http://localhost:5173/callback
+   VITE_PROXY_API_URL=http://localhost:3001/api
 
-```bash
-# Clone the repository
-cd rainsorter
+   # Backend (server/.env)
+   RAINDROP_CLIENT_ID=your_client_id_here
+   RAINDROP_CLIENT_SECRET=your_client_secret_here
+   FRONTEND_URL=http://localhost:5173
+   PORT=3001
+   ```
 
-# Install frontend dependencies
-npm install
+3. **Install & Run**
+   ```bash
+   npm install
+   npm start
+   ```
 
-# Install backend dependencies
-cd server
-npm install
-cd ..
+4. **Open Browser**
+   - Visit http://localhost:5173
+   - Login with Raindrop.io
+   - Start sorting!
+
+## How to Use
+
+### Main Workflow
+
+1. **View Your Unsorted Items**
+   - All unsorted bookmarks load automatically
+   - See title, URL, tags, and creation date
+
+2. **Get AI Suggestions**
+   - Click **"✨ Fetch Suggestions"** button
+   - Wait for AI to analyze your bookmarks (progress shown live)
+   - See suggested folders with confidence scores (e.g., "Work (85%)")
+
+3. **Sort Your Bookmarks**
+
+   **Method 1: Click AI Suggestion**
+   - Click a suggested folder badge
+   - Item moves to that folder
+   - Gets tagged with `_rainsorter`
+
+   **Method 2: Manual Selection**
+   - Click the **✏️** icon
+   - Search or browse full folder tree
+   - Select any folder manually
+   - Gets tagged with `_rainsorter_manual`
+
+4. **Filter & Review**
+   - Click folders in left sidebar to filter view
+   - See existing items in selected folder (top panel)
+   - Use "Hide sorted" checkbox to hide organized items
+
+### Understanding the Tags
+
+RainSorter adds special tags to help you track and revert changes:
+
+#### `_rainsorter` Tag
+- **When**: Automatically added when you click an AI suggestion
+- **Means**: "This was sorted using AI suggestions"
+- **Why**: So you can easily find and review AI-sorted items later
+
+#### `_rainsorter_manual` Tag
+- **When**: Automatically added when you use the ✏️ manual selector
+- **Means**: "I manually chose this folder (not AI, not official app)"
+- **Why**: Different from AI suggestions, but still tracked for reverting
+
+### Why These Tags Matter
+
+**🔄 Easy Revert**: Made mistakes while sorting? Want to start over?
+
+Just search for items with `_rainsorter` or `_rainsorter_manual` tags in the official Raindrop app, select all, and move them back to Unsorted. All your sorting decisions are reversible!
+
+**📊 Track Your Progress**:
+- Items with `_rainsorter` = AI helped you decide
+- Items with `_rainsorter_manual` = You decided manually
+- No tag = Sorted in official app or pre-existing
+
+## Tips & Best Practices
+
+### Sorting Strategy
+
+1. **Start Small**: Click "Fetch Suggestions" to analyze your bookmarks
+2. **Trust High Confidence**: Suggestions with 80%+ confidence are usually accurate
+3. **Use Manual for Edge Cases**: Use ✏️ when AI suggestion doesn't fit
+4. **Review Before Finalizing**: Click folders in sidebar to preview what's already there
+
+### Managing Large Collections
+
+- **Batch Processing**: Suggestions fetch in the background, stats update live
+- **Filter by Folder**: Click sidebar folders to focus on specific categories
+- **Hide Sorted**: Check "Hide sorted" to see only remaining unsorted items
+
+### Reverting Mistakes
+
+**Option 1: Revert Everything**
+```
+1. In official Raindrop app, search: #_rainsorter OR #_rainsorter_manual
+2. Select all results
+3. Move to "Unsorted"
+4. Remove tags
 ```
 
-### 2. Configure Environment Variables
-
-#### Frontend Environment (`.env`)
-
-Create a `.env` file in the root directory:
-
-```env
-VITE_RAINDROP_CLIENT_ID=your_client_id_here
-VITE_REDIRECT_URI=http://localhost:5173/callback
-VITE_PROXY_API_URL=http://localhost:3001/api
+**Option 2: Revert AI Only**
+```
+Search: #_rainsorter
+Move to Unsorted
+(Keeps your manual decisions)
 ```
 
-#### Backend Environment (`server/.env`)
-
-Create a `server/.env` file:
-
-```env
-RAINDROP_CLIENT_ID=your_client_id_here
-RAINDROP_CLIENT_SECRET=your_client_secret_here
-FRONTEND_URL=http://localhost:5173
-PORT=3001
+**Option 3: Revert Manual Only**
+```
+Search: #_rainsorter_manual
+Move to Unsorted
+(Keeps AI suggestions)
 ```
 
-**Note**: Your `.env` files are already gitignored for security.
+## Features Overview
 
-## Running the App
+- ✅ OAuth2 authentication (secure, no password storage)
+- ✅ Fetch ALL unsorted bookmarks (no pagination limits)
+- ✅ AI-powered folder suggestions with confidence scores
+- ✅ One-click sorting to suggested folders
+- ✅ Manual folder selector with search
+- ✅ Tree-view sidebar with folder hierarchy
+- ✅ Preview existing items in folders
+- ✅ Real-time suggestion fetching progress
+- ✅ Hide sorted items filter
+- ✅ Tag-based revert system
+- ✅ Full JSON inspector for debugging
 
-### Option 1: Run Both Servers Together (Recommended)
+## FAQ
 
-```bash
-npm start
-```
+**Q: Will this delete my bookmarks?**
+A: No! It only moves bookmarks between folders and adds tags. Nothing is deleted.
 
-This will start both the backend proxy (port 3001) and frontend (port 5173) in a single terminal with colored output.
+**Q: Can I undo sorting decisions?**
+A: Yes! Items are tagged with `_rainsorter` or `_rainsorter_manual`. Search for these tags in the official app and move them back to Unsorted.
 
-### Option 2: Run Servers Separately
+**Q: Does this work with shared collections?**
+A: It works with any collections in your account that you have edit access to.
 
-If you prefer to run them in separate terminals:
+**Q: Is my data safe?**
+A: Yes! RainSorter uses OAuth2 (official Raindrop authentication). Your credentials never touch our servers. The app runs locally on your computer.
 
-**Terminal 1: Start Backend Proxy**
-
-```bash
-npm run server
-# or
-cd server && npm start
-```
-
-**Terminal 2: Start Frontend**
-
-```bash
-npm run dev
-```
-
-## Usage
-
-1. Open `http://localhost:5173` in your browser
-2. Click "Login with Raindrop.io"
-3. Authorize the app in Raindrop.io
-4. You'll be redirected back and see your unsorted bookmarks
-5. Use pagination to navigate through your bookmarks
-6. Click on any title to open the bookmark in a new tab
-
-## Project Structure
-
-```
-rainsorter/
-├── src/
-│   ├── components/       # React components
-│   │   ├── ErrorMessage.jsx
-│   │   ├── Header.jsx
-│   │   ├── Loader.jsx
-│   │   ├── RaindropRow.jsx
-│   │   └── RaindropsTable.jsx
-│   ├── pages/           # Page components
-│   │   ├── CallbackPage.jsx
-│   │   ├── DashboardPage.jsx
-│   │   └── LoginPage.jsx
-│   ├── hooks/           # Custom React hooks
-│   │   ├── useAuth.js
-│   │   ├── useOAuthCallback.js
-│   │   └── useRaindrops.js
-│   ├── services/        # API services
-│   │   ├── authService.js
-│   │   ├── proxyApi.js
-│   │   └── raindropApi.js
-│   ├── store/           # Jotai atoms (state)
-│   │   ├── authAtoms.js
-│   │   ├── raindropsAtoms.js
-│   │   └── uiAtoms.js
-│   ├── utils/           # Utility functions
-│   │   ├── constants.js
-│   │   ├── formatters.js
-│   │   └── storage.js
-│   ├── styles/          # CSS files
-│   ├── App.jsx          # Main app with routing
-│   └── main.jsx         # Entry point
-├── server/              # Backend OAuth proxy
-│   ├── index.js        # Express server
-│   └── package.json
-├── .env                 # Frontend environment variables
-└── README.md
-```
-
-## Architecture
-
-### OAuth Flow (Security)
-
-RainSorter uses a **backend proxy** to keep your OAuth credentials secure:
-
-1. **Frontend** redirects user to Raindrop.io for authorization
-2. **Raindrop.io** redirects back with an authorization code
-3. **Frontend** sends code to **backend proxy**
-4. **Backend** exchanges code + client_secret for access token (secure!)
-5. **Backend** returns token to **frontend**
-6. **Frontend** uses token to fetch bookmarks
-
-This ensures your `client_secret` never appears in browser JavaScript.
-
-### State Management
-
-Uses **Jotai** atoms for reactive state:
-- `authAtoms`: Access token, refresh token, authentication status
-- `raindropsAtoms`: Bookmarks data, loading, errors, pagination
-- `uiAtoms`: UI preferences (items per page)
-
-Tokens persist in `localStorage` via Jotai's `atomWithStorage`.
-
-### API Integration
-
-- **Raindrop.io API**: `https://api.raindrop.io/rest/v1/`
-- **Unsorted Collection**: Collection ID `-1`
-- **Pagination**: 50 items per page (API maximum)
-- **Token Refresh**: Automatic when token expires
+**Q: Why run a local server?**
+A: The backend proxy keeps your OAuth client secret secure (can't expose it in browser JavaScript). This follows security best practices.
 
 ## Troubleshooting
 
-### "OAuth error" or "bad_authorization_code"
+**"No authorization code found"**
+- Check your redirect URI in Raindrop.io settings matches exactly: `http://localhost:5173/callback`
 
-- Check that your `REDIRECT_URI` in `.env` matches exactly what's registered in Raindrop.io
-- Make sure both backend and frontend servers are running
+**"Failed to fetch suggestions"**
+- You might be rate-limited. Wait 30 seconds and try again.
+- Suggestions fetch in batches (5 at a time) to avoid hitting rate limits.
 
-### CORS errors
-
-- Verify `FRONTEND_URL` in `server/.env` matches your frontend URL
-- Check that the backend server is running on port 3001
-
-### "No authorization code found"
-
-- Clear your browser cookies and localStorage
-- Try the login flow again
-
-### Tokens not persisting
-
-- Check browser console for localStorage errors
-- Ensure you're not in private/incognito mode
-
-## Development
-
-### Adding Features
-
-- **New API calls**: Add to `src/services/raindropApi.js`
-- **New state**: Create atoms in `src/store/`
-- **New components**: Add to `src/components/`
-- **Styling**: Update `src/App.css`
-
-### Code Style
-
-- Use functional components with hooks
-- Keep components small and focused
-- Use custom hooks for complex logic
-- Follow existing naming conventions
-
-## Production Deployment
-
-### Frontend (Vercel/Netlify)
-
-1. Build the app: `npm run build`
-2. Deploy the `dist` folder
-3. Update `.env` with production URLs
-
-### Backend (Railway/Heroku/Render)
-
-1. Deploy the `server` folder
-2. Set environment variables in hosting dashboard
-3. Update `FRONTEND_URL` to your production frontend URL
-
-### Environment Variables for Production
-
-**Frontend**:
-```
-VITE_RAINDROP_CLIENT_ID=your_client_id
-VITE_REDIRECT_URI=https://your-domain.com/callback
-VITE_PROXY_API_URL=https://your-backend.com/api
-```
-
-**Backend**:
-```
-RAINDROP_CLIENT_ID=your_client_id
-RAINDROP_CLIENT_SECRET=your_client_secret
-FRONTEND_URL=https://your-domain.com
-PORT=3001
-```
-
-Don't forget to register your production redirect URI in Raindrop.io!
-
-## Security Notes
-
-- ✅ OAuth client secret stored securely on backend
-- ✅ Tokens stored in localStorage (encrypted in transit)
-- ✅ CORS properly configured
-- ⚠️ This is a personal tool - don't share your OAuth credentials
-
-## License
-
-MIT
-
-## Credits
-
-Built with:
-- [Vite](https://vitejs.dev/)
-- [React](https://react.dev/)
-- [Jotai](https://jotai.org/)
-- [Raindrop.io API](https://developer.raindrop.io/)
+**"Items not showing up"**
+- Click the 🔄 Refresh button
+- Check "Hide sorted" is unchecked if you want to see sorted items
 
 ---
 
-**Happy organizing! 📚✨**
+## For Developers
+
+### Tech Stack
+- **Frontend**: Vite + React + Jotai (state)
+- **Backend**: Express.js (OAuth proxy)
+- **API**: Raindrop.io REST API
+- **Styling**: Plain CSS (no frameworks)
+
+### Project Structure
+```
+rainsorter/
+├── src/                    # Frontend React app
+│   ├── components/        # UI components
+│   ├── hooks/            # Custom React hooks
+│   ├── services/         # API clients
+│   ├── store/            # Jotai atoms (state)
+│   └── utils/            # Helpers
+└── server/               # Express OAuth proxy
+    └── index.js
+```
+
+### Development
+
+```bash
+# Install dependencies
+npm install
+cd server && npm install
+
+# Run both servers
+npm start
+
+# Or run separately
+npm run dev          # Frontend (port 5173)
+npm run server       # Backend (port 3001)
+```
+
+### Key Design Decisions
+
+- **Backend Proxy**: Required to keep OAuth client_secret secure
+- **Jotai + localStorage**: Persistent state across page refreshes
+- **Batched Fetching**: Avoid rate limits (5 concurrent, 500ms delay)
+- **Tag-Based Tracking**: Enable reversible sorting operations
+- **No Pagination**: Fetch ALL items for complete view
+
+### API Endpoints Used
+
+- `GET /rest/v1/raindrops/-1` - Fetch unsorted items
+- `GET /rest/v1/raindrops/0?search=#tag` - Fetch tagged items
+- `GET /rest/v1/raindrop/{id}/suggest` - Get AI suggestions
+- `PUT /rest/v1/raindrop/{id}` - Update raindrop
+- `GET /rest/v1/collections` - Get folder tree
+
+### Contributing
+
+Issues and pull requests welcome! This is a community tool to help Raindrop users.
+
+### License
+
+MIT - Free to use, modify, and distribute.
+
+---
+
+Made with ☕ by Raindrop.io users, for Raindrop.io users
