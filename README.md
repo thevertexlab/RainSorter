@@ -1,9 +1,10 @@
-# 🌧️ RainSorter
+# 🌧️ RainSorter [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fthevertexlab%2FRainSorter&env=VITE_RAINDROP_CLIENT_ID,VITE_REDIRECT_URI,VITE_PROXY_API_URL,RAINDROP_CLIENT_ID,RAINDROP_CLIENT_SECRET&envDescription=Raindrop.io%20OAuth%20credentials%20and%20deployment%20URLs&envLink=https%3A%2F%2Fgithub.com%2Fthevertexlab%2FRainSorter%23environment-variables&project-name=rainsorter&repository-name=rainsorter)
+
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 > AI-powered tool to help you organize your Raindrop.io bookmarks efficiently
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fthevertexlab%2FRainSorter&env=VITE_RAINDROP_CLIENT_ID,VITE_REDIRECT_URI,VITE_PROXY_API_URL,RAINDROP_CLIENT_ID,RAINDROP_CLIENT_SECRET&envDescription=Raindrop.io%20OAuth%20credentials%20and%20deployment%20URLs&envLink=https%3A%2F%2Fgithub.com%2Fthevertexlab%2FRainSorter%23environment-variables&project-name=rainsorter&repository-name=rainsorter)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 RainSorter is an open-source web app that helps you sort through your unsorted Raindrop.io bookmarks. It uses Raindrop's built-in AI to suggest which folder each bookmark belongs to, and lets you move them with a single click.
 
@@ -15,7 +16,7 @@ RainSorter is an open-source web app that helps you sort through your unsorted R
 
 ## ✨ Try It
 
-| | |
+| Methods | |
 |---|---|
 | 🌐 **Public instance** | **[rainsorter.vercel.app](https://rainsorter.vercel.app)** — free to use, login with your own Raindrop.io account |
 | 🚀 **Self-host on Vercel** | [One-click deploy your own instance](#-deploy-on-vercel) — requires your own Raindrop OAuth app |
