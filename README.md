@@ -8,6 +8,8 @@ RainSorter is an open-source web app that helps you sort through your unsorted R
 
 **Perfect for when you have hundreds of unsorted bookmarks and need help organizing them!**
 
+![RainSorter Screenshot](screenshot.png)
+
 ## Why Use RainSorter?
 
 - 📚 **Bulk Organization**: Sort through all your unsorted bookmarks in one place
